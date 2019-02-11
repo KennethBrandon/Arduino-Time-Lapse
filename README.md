@@ -1,6 +1,25 @@
 # Arduino-Time-Lapse
 An Arduino project to create a simple time-lapse dolly
 
+## Components List:
+* Arduino Nano
+* EasyDriver Stepper Board
+* Stepper Motor
+* 5 buttons
+* Speaker
+
+## Wiring Diagram
+* Maybe one day
+
+## Usage
+* Move the stepper to start location, location A
+* Set Location A
+* Move the stepper to end location, location B
+* Set Location B
+* Set duration of time-lapse in hours, minutes, or seconds
+* See overview of time-lapse
+* Begin time-lapse
+
 ## Setting up Build Environment
 * Install [Arduino IDE](https://www.arduino.cc/en/Main/Software)
 * Clone this repo in the Arudino folder
