@@ -88,10 +88,10 @@ void loop() {
 
 void printLocations() {
   lcd.clear();
-  lcd.setCursor(11,0);
-  lcd.print("Set START");
-  lcd.setCursor(13,1);
-  lcd.print("Set END");
+  lcd.setCursor(15,0);
+  lcd.print("Set A");
+  lcd.setCursor(15,1);
+  lcd.print("Set B");
   lcd.setCursor(16,2);
   lcd.print("Next");
   lcd.setCursor(0,3);
@@ -152,9 +152,8 @@ void loopSetLocations() {
   else{
     if(wasLeftDown){
       wasLeftDown = false;
-      
       lcd.setCursor(4,2);
-      lcd.print("       ");
+      lcd.print("         ");
       chirp();
     }
   }
@@ -173,9 +172,8 @@ void loopSetLocations() {
   else{
     if(wasRightDown){
       wasRightDown = false;
-      
       lcd.setCursor(4,2);
-      lcd.print("       ");
+      lcd.print("         ");
       chirp();
     }
   }
@@ -186,21 +184,21 @@ void loopSetLocations() {
     lcd.print(currentStepCount);
     
     lcd.setCursor(0,0);
-    lcd.print("Start:");
-    lcd.setCursor(6,0);
+    lcd.print("A:");
+    lcd.setCursor(2,0);
     lcd.print(stepCountStart);
 
     lcd.setCursor(0,1);
-    lcd.print("End:");
-    lcd.setCursor(4,1);
+    lcd.print("B:");
+    lcd.setCursor(2,1);
     lcd.print(stepCountEnd);
   }
   if(setStartDown){
     stepCountStart = currentStepCount;
     chirp();
-    lcd.setCursor(6,0);
-    lcd.print("     "); 
-    lcd.setCursor(6,0);
+    lcd.setCursor(2,0);
+    lcd.print("        "); 
+    lcd.setCursor(2,0);
     lcd.print(stepCountStart);
     delay(500);
   }
@@ -208,9 +206,9 @@ void loopSetLocations() {
     stepCountEnd = currentStepCount;
     chirp();
     
-    lcd.setCursor(4,1);
-    lcd.print("     ");
-    lcd.setCursor(4,1);
+    lcd.setCursor(2,1);
+    lcd.print("       ");
+    lcd.setCursor(2,1);
     lcd.print(stepCountEnd);
     delay(500);
   }
@@ -415,7 +413,7 @@ void printDuration(){
 
 void printCount(){
   lcd.setCursor(4,2);
-  lcd.print("       ");
+  lcd.print("         ");
   lcd.setCursor(4,2);
   lcd.print(currentStepCount);
 }
