@@ -37,6 +37,11 @@ enum timeValues{
 long seconds = 0;
 long minutes = 0;
 long hours = 0;
+long duration = 0;
+long millisAtStart = 0;
+bool goUp = true;
+bool goToBegin = false;
+bool showDebug = true;
 
 enum timeValues timeSelection = SEC;
 
@@ -275,12 +280,6 @@ void loopSetTime() {
   }
 }
 
-bool isRunning = false;
-long duration = 0;
-long millisAtStart = 0;
-bool goUp = true;
-bool goToBegin = false;
-bool showDebug = true;
 void loopRunning(){
   if(lastState != RUNNING){
     lastState = RUNNING;
