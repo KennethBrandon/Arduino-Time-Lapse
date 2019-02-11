@@ -4,6 +4,7 @@ An Arduino project to create a simple time-lapse dolly
 ## Components List:
 * Arduino Nano
 * EasyDriver Stepper Board
+* 20x4 LCD with I2C board
 * Stepper Motor
 * 5 buttons
 * Speaker
