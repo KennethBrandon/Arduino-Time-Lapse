@@ -34,9 +34,9 @@ enum timeValues{
   MIN,
   HOUR
 };
-int seconds = 0;
-int minutes = 0;
-int hours = 0;
+long seconds = 0;
+long minutes = 0;
+long hours = 0;
 
 enum timeValues timeSelection = SEC;
 
@@ -63,6 +63,7 @@ void setup() {
   lcd.init(); // initialize the lcd 
   lcd.backlight();
   printLocations();
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -275,14 +276,42 @@ void loopSetTime() {
 }
 
 bool isRunning = false;
+long duration = 0;
+long millisAtStart = 0;
+bool goUp = true;
+bool goToBegin = false;
+bool showDebug = true;
 void loopRunning(){
   if(lastState != RUNNING){
     lastState = RUNNING;
     lcd.clear(); lcd.setCursor(7,1); lcd.print("Ready?");
     playBegin();
     lcd.clear(); lcd.setCursor(7,1); lcd.print("GO!");
+    printRunning();
+    duration = seconds*1000 + minutes *1000*60 + hours*60*60*1000;
+    Serial.println("Duration:");
+    Serial.println(duration);
+    if(stepCountStart > stepCountEnd) {
+      digitalWrite(DIR_PIN, LOW);
+      goUp = false;
+    } else {
+      digitalWrite(DIR_PIN, HIGH);
+      goUp = true;
+    }
+    millisAtStart = millis();
   }
-  bool pauseDown = !digitalRead(BUTTON_RIGHT_PIN);
+
+  if(currentStepCount == stepCountEnd){  //DONE!
+    if(showDebug){
+      lcd.setCursor(9,0);
+      lcd.print("100%");
+    }
+    playMelody();
+    state = OVERVIEW;
+    return;
+  }
+  
+  bool debugDown = !digitalRead(BUTTON_RIGHT_PIN);
   bool quitDown = !digitalRead(BUTTON_3_PIN);
   
   if(quitDown){
@@ -290,16 +319,47 @@ void loopRunning(){
     chirp();
     delay(500);
   }
-  if(pauseDown){
+  if(debugDown){
     chirp();
-    delay(500);
-    isRunning = !isRunning;
+    showDebug = !showDebug;
   }
-  
+
+  if(shouldTakeAStep()){
+    sendStep();
+    if(goUp) currentStepCount++;
+    else currentStepCount--;
+  }
+}
+bool shouldTakeAStep(){
+  long millisFromStart = millis() - millisAtStart;
+  float timeRatioComplete = (float)millisFromStart/(float)duration;
+  long stepsToTake = abs(stepCountStart-stepCountEnd);
+  long stepsTaken = abs(stepCountStart-currentStepCount);
+  float stepsRatioComplete = (float)stepsTaken/(float)stepsToTake;
+  if(showDebug){
+      if(millisFromStart%200 == 0){
+      Serial.println("------------------------");
+      Serial.println("millisFromStart");
+      Serial.println(millisFromStart);
+      Serial.println("timeRatioComplete");
+      Serial.println(timeRatioComplete);
+      Serial.println("stepsToTake");
+      Serial.println(stepsToTake);
+      Serial.println("stepsTaken");
+      Serial.println(stepsTaken);
+      Serial.println("stepsRatioComplete");
+      Serial.println(stepsRatioComplete);
+      lcd.setCursor(9,0);
+      lcd.print((String)(int)(stepsRatioComplete*100) +"%");
+      lcd.setCursor(10,2);
+      lcd.print("          ");
+      lcd.setCursor(10,2);
+      lcd.print(currentStepCount);
+    }
+  }
+  return stepsRatioComplete<=timeRatioComplete;
 }
 
-bool goUp = true;
-bool goToBegin = false;
 void loopGotoStart(){
   if(lastState != GOTO_START){
     lastState = GOTO_START;
@@ -433,4 +493,24 @@ void printSetTime(){
   lcd.print("Next");
   printDuration();
   printTimeSelection();
+}
+void printRunning(){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Running:");
+  lcd.setCursor(16,0);
+  lcd.print("Quit");
+
+  lcd.setCursor(0,1);
+  lcd.print("A:");
+  lcd.setCursor(2,1);
+  lcd.print(stepCountStart);
+  
+  lcd.setCursor(10,1);
+  lcd.print("B:");
+  lcd.setCursor(12,1);
+  lcd.print(stepCountEnd);
+
+  lcd.setCursor(0,2);
+  lcd.print("Location:");
 }
