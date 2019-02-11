@@ -363,17 +363,16 @@ void printOverview(){
   lcd.print("Duration:");
   printDuration(9,1);
   lcd.setCursor(0,2);
-  lcd.print("Start:");
-  lcd.setCursor(6,2);
+  lcd.print("A:");
+  lcd.setCursor(2,2);
   lcd.print(stepCountStart);
   
-  lcd.setCursor(11,2);
-  lcd.print("End:");
-  lcd.setCursor(15,2);
+  lcd.setCursor(10,2);
+  lcd.print("B:");
+  lcd.setCursor(12,2);
   lcd.print(stepCountEnd);
   lcd.setCursor(0,3);
-  lcd.print("Goto Start     Begin");
-
+  lcd.print("Goto A         Begin");
 }
 void printTimeSelection(){
   switch(timeSelection){
