@@ -339,6 +339,7 @@ void loopOverview(){
     delay(500);
   }
   if(gotoStartDown){
+    goToBegin = false;
     state= GOTO_START;
     chirp();
     delay(500);
