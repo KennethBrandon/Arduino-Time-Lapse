@@ -89,7 +89,7 @@ void loop() {
       loopRunning();
       break;
   }
-  delay(1);
+  delayMicroseconds(500);
 }
 
 void printLocations() {
