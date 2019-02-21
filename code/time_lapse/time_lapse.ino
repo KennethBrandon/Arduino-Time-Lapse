@@ -6,9 +6,9 @@
 #define DISTANCE 1600
 #define BUTTON_RIGHT_PIN 10
 #define BUTTON_LEFT_PIN 9
-#define BUTTON_3_PIN 8
+#define BUTTON_3_PIN 6
 #define BUTTON_4_PIN 7
-#define BUTTON_5_PIN 6
+#define BUTTON_5_PIN 8
 #define SPEAKER_PIN 11
 LiquidCrystal_I2C lcd(0x27,20,4);
 
