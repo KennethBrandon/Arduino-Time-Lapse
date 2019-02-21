@@ -192,13 +192,14 @@ void loopSetLocations() {
     if(!wasLeftDown){
       wasLeftDown = true;
       digitalWrite(DIR_PIN, LOW);
+      lcd.setCursor(4,2);
+      lcd.print("            ");
+      lcd.setCursor(4,2);
+      lcd.print("Moving...");
       chirp();
     }
     sendStep();
     currentStepCount = currentStepCount - 1;
-    if(currentStepCount%250 == 0){
-      printCount();
-    }
   }
   else{
     if(wasLeftDown){
@@ -212,13 +213,14 @@ void loopSetLocations() {
     if(!wasRightDown){
       wasRightDown = true;
       digitalWrite(DIR_PIN, HIGH);
+      lcd.setCursor(4,2);
+      lcd.print("            ");
+      lcd.setCursor(4,2);
+      lcd.print("Moving...");
       chirp();
     }
     sendStep();
     currentStepCount = currentStepCount + 1;
-    if(currentStepCount%250 == 0){
-      printCount();
-    }
   }
   else{
     if(wasRightDown){
@@ -507,13 +509,6 @@ void printDuration(int col, int row ){
 }
 void printDuration(){
   printDuration(0,1);
-}
-
-void printCount(){
-  lcd.setCursor(4,2);
-  lcd.print("         ");
-  lcd.setCursor(4,2);
-  lcd.print(currentStepCount);
 }
 void sendStep(){
   digitalWrite(STEP_PIN, HIGH);
