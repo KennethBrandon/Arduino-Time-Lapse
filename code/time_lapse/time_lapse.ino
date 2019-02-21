@@ -123,7 +123,7 @@ void updateBouncers(){
 
 void loopSplashScreen(){
   long splashDuration = millis() - splashStart;
-  if(!digitalRead(BUTTON_RIGHT_PIN)||!digitalRead(BUTTON_LEFT_PIN)||!digitalRead(BUTTON_3_PIN)||!digitalRead(BUTTON_4_PIN)||!digitalRead(BUTTON_5_PIN) || splashDuration > SPLASH_DURATION){
+  if(bounceRight.fell()||bounceLeft.fell()||bounce1.fell()||bounce2.fell()||bounce3.fell() || splashDuration > SPLASH_DURATION){
     state = SET_LOCATIONS;
     chirp();
   }
