@@ -1,5 +1,6 @@
 
 #include <LiquidCrystal_I2C.h>
+#include <Bounce2.h>
 #include "pitches.h"
 #define STEP_PIN 4
 #define DIR_PIN 5
@@ -11,7 +12,13 @@
 #define BUTTON_5_PIN 8
 #define SPEAKER_PIN 11
 #define SPLASH_DURATION 4000
+#define BOUNCE_INTERVAL 25
 LiquidCrystal_I2C lcd(0x27,20,4);
+Bounce bounceLeft;
+Bounce bounceRight;
+Bounce bounce1;
+Bounce bounce2;
+Bounce bounce3;
 
 enum states {
   SPLASH_SCREEN,
@@ -62,12 +69,18 @@ void setup() {
   digitalWrite(DIR_PIN, LOW);
   digitalWrite(STEP_PIN, LOW);
 
-  pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_LEFT_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_3_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_4_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_5_PIN, INPUT_PULLUP);
-  
+  bounceRight.attach(BUTTON_RIGHT_PIN, INPUT_PULLUP);
+  bounceLeft.attach(BUTTON_LEFT_PIN, INPUT_PULLUP);
+  bounce1.attach(BUTTON_3_PIN, INPUT_PULLUP);
+  bounce2.attach(BUTTON_4_PIN, INPUT_PULLUP);
+  bounce3.attach(BUTTON_5_PIN, INPUT_PULLUP);
+
+  bounceRight.interval(BOUNCE_INTERVAL);
+  bounceLeft.interval(BOUNCE_INTERVAL);
+  bounce1.interval(BOUNCE_INTERVAL);
+  bounce2.interval(BOUNCE_INTERVAL);
+  bounce3.interval(BOUNCE_INTERVAL);
+
   lcd.init(); // initialize the lcd 
   lcd.backlight();
   printSplash();
@@ -76,6 +89,7 @@ void setup() {
 }
 
 void loop() {
+  updateBouncers();
   switch(state){
     case SPLASH_SCREEN:
       loopSplashScreen();
@@ -97,6 +111,14 @@ void loop() {
       break;
   }
   delayMicroseconds(500);
+}
+
+void updateBouncers(){
+  bounceRight.update();
+  bounceLeft.update();
+  bounce1.update();
+  bounce2.update();
+  bounce3.update();
 }
 
 void loopSplashScreen(){
@@ -159,14 +181,14 @@ void playBegin(){
 
 void loopSetLocations() {
   
-  bool setStartDown = !digitalRead(BUTTON_3_PIN);
-  bool setEndDown = !digitalRead(BUTTON_4_PIN);
-  bool nextDown = !digitalRead(BUTTON_5_PIN);
+  bool setStartDown = bounce1.fell();
+  bool setEndDown = bounce2.fell();
+  bool nextDown = bounce3.fell();
   if(lastState!=SET_LOCATIONS){
     printLocations();
     lastState = SET_LOCATIONS;
   }
-  if(digitalRead(BUTTON_LEFT_PIN) == LOW){
+  if(bounceLeft.read()  == LOW){
     if(!wasLeftDown){
       wasLeftDown = true;
       digitalWrite(DIR_PIN, LOW);
@@ -186,7 +208,7 @@ void loopSetLocations() {
       chirp();
     }
   }
-  if(digitalRead(BUTTON_RIGHT_PIN) == LOW){
+  if(bounceRight.read() == LOW){
     if(!wasRightDown){
       wasRightDown = true;
       digitalWrite(DIR_PIN, HIGH);
@@ -255,15 +277,14 @@ void loopSetTime() {
     printSetTime();
     lastState = SET_TIME;
   }
-  bool rightDown = !digitalRead(BUTTON_RIGHT_PIN);
-  bool leftDown = !digitalRead(BUTTON_LEFT_PIN);
-  bool backDown = !digitalRead(BUTTON_3_PIN);
-  bool timeDown = !digitalRead(BUTTON_4_PIN);
-  bool nextDown = !digitalRead(BUTTON_5_PIN);
+  bool rightDown = !bounceRight.read();
+  bool leftDown = !bounceLeft.read();
+  bool backDown = bounce1.fell();
+  bool timeDown = bounce2.fell();
+  bool nextDown = bounce3.fell();
   if(backDown) {
     state = SET_LOCATIONS;
     chirp();
-    delay(500);
   }
   if(timeDown){ 
     switch(timeSelection){
@@ -273,7 +294,6 @@ void loopSetTime() {
     }
     printTimeSelection();
     chirp();
-    delay(500);
   }
   if(rightDown){
     switch(timeSelection){
@@ -299,7 +319,6 @@ void loopSetTime() {
     if(minutes == hours && hours == seconds && seconds == 0) return;
     state = OVERVIEW;
     chirp();
-    delay(500);
   }
 }
 
@@ -333,8 +352,8 @@ void loopRunning(){
     return;
   }
   
-  bool debugDown = !digitalRead(BUTTON_RIGHT_PIN);
-  bool quitDown = !digitalRead(BUTTON_3_PIN);
+  bool debugDown = bounceRight.fell();
+  bool quitDown = bounce1.fell();
   
   if(quitDown){
     state = OVERVIEW;
@@ -411,25 +430,22 @@ void loopOverview(){
     printOverview();
   }
   
-  bool beginDown = !digitalRead(BUTTON_RIGHT_PIN);
-  bool gotoStartDown = !digitalRead(BUTTON_LEFT_PIN);
-  bool backDown = !digitalRead(BUTTON_3_PIN);
+  bool beginDown = bounceRight.fell();
+  bool gotoStartDown = bounceLeft.fell();
+  bool backDown = bounce1.fell();
 
   if(backDown){
     state = SET_TIME;
     chirp();
-    delay(500);
   }
   if(gotoStartDown){
     goToBegin = false;
     state= GOTO_START;
     chirp();
-    delay(500);
   }
   if(beginDown){
     goToBegin = true;
     state = GOTO_START;
-    delay(500);
   }
 
 }
