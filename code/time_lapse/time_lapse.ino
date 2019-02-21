@@ -10,9 +10,11 @@
 #define BUTTON_4_PIN 7
 #define BUTTON_5_PIN 8
 #define SPEAKER_PIN 11
+#define SPLASH_DURATION 4000
 LiquidCrystal_I2C lcd(0x27,20,4);
 
 enum states {
+  SPLASH_SCREEN,
   SET_LOCATIONS,
   SET_TIME,
   GOTO_START,
@@ -21,8 +23,8 @@ enum states {
   RUNNING
 };
 
-enum states state = SET_LOCATIONS;
-enum states lastState = SET_LOCATIONS;
+enum states state = SPLASH_SCREEN;
+enum states lastState = SPLASH_SCREEN;
 int stepCountStart = 0;
 int stepCountEnd = 0;
 bool wasLeftDown = false;
@@ -42,6 +44,7 @@ long millisAtStart = 0;
 bool goUp = true;
 bool goToBegin = false;
 bool showDebug = true;
+long splashStart;
 
 enum timeValues timeSelection = SEC;
 
@@ -67,12 +70,16 @@ void setup() {
   
   lcd.init(); // initialize the lcd 
   lcd.backlight();
-  printLocations();
+  printSplash();
+  splashStart = millis();
   Serial.begin(9600);
 }
 
 void loop() {
   switch(state){
+    case SPLASH_SCREEN:
+      loopSplashScreen();
+      break;
     case SET_LOCATIONS:
       loopSetLocations();
       break;
@@ -92,6 +99,22 @@ void loop() {
   delayMicroseconds(500);
 }
 
+void loopSplashScreen(){
+  long splashDuration = millis() - splashStart;
+  if(!digitalRead(BUTTON_RIGHT_PIN)||!digitalRead(BUTTON_LEFT_PIN)||!digitalRead(BUTTON_3_PIN)||!digitalRead(BUTTON_4_PIN)||!digitalRead(BUTTON_5_PIN) || splashDuration > SPLASH_DURATION){
+    state = SET_LOCATIONS;
+    chirp();
+  }
+}
+void printSplash(){
+  lcd.clear();
+  lcd.setCursor(0,1);
+  lcd.print("  Simple Time-lapse ");
+  lcd.setCursor(0,2);
+  lcd.print(" (c) Kenneth Brandon");
+  lcd.setCursor(0,3);
+  lcd.print("                2019");
+}
 void printLocations() {
   lcd.clear();
   lcd.setCursor(15,0);
