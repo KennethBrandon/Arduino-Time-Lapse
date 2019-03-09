@@ -52,6 +52,7 @@ bool goUp = true;
 bool goToBegin = false;
 bool showDebug = true;
 long splashStart;
+bool isBacklightOn = true;
 
 enum timeValues timeSelection = SEC;
 
@@ -342,9 +343,11 @@ void loopRunning(){
       goUp = true;
     }
     millisAtStart = millis();
+    isBacklightOn = true;
   }
 
   if(currentStepCount == stepCountEnd){  //DONE!
+    lcd.backlight();
     if(showDebug){
       lcd.setCursor(9,0);
       lcd.print("100%");
@@ -354,17 +357,24 @@ void loopRunning(){
     return;
   }
   
-  bool debugDown = bounceRight.fell();
+  bool debugDown = bounceLeft.fell();
   bool quitDown = bounce1.fell();
+  bool lightDown = bounceRight.fell();
   
   if(quitDown){
     state = OVERVIEW;
     chirp();
+    lcd.backlight();
     delay(500);
   }
   if(debugDown){
     chirp();
     showDebug = !showDebug;
+  }
+  if(lightDown){
+    if(isBacklightOn) lcd.noBacklight();
+    else lcd.backlight();
+    isBacklightOn = !isBacklightOn;
   }
 
   if(shouldTakeAStep()){
@@ -432,7 +442,7 @@ void loopOverview(){
     printOverview();
   }
   
-  bool beginDown = bounceRight.fell();
+  bool beginDown = bounceRight.fell() || bounce3.fell();
   bool gotoStartDown = bounceLeft.fell();
   bool backDown = bounce1.fell();
 
@@ -533,6 +543,8 @@ void printRunning(){
   lcd.print("Running:");
   lcd.setCursor(16,0);
   lcd.print("Quit");
+  lcd.setCursor(0,3);
+  lcd.print("Refresh        Light");
 
   lcd.setCursor(0,1);
   lcd.print("A:");
